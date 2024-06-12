@@ -1,3 +1,18 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+require 'config.php';
+
+$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username'];
+
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,6 +21,12 @@
     <style>
         body {
             background-color: #f8f9fa;
+            margin: 0;
+            padding-top: 50px;
+        }
+        .container {
+            position: relative;
+            margin-bottom: 50px;
         }
         .card {
             margin-top: 20px;
@@ -17,14 +38,15 @@
             background-color: #007bff;
             color: white;
             position: relative;
-            height: 300px; /* Sesuaikan tinggi jumbotron */
+            height: 300px;
+            margin-top: 20px; 
         }
         .jumbotron img {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            max-height: 300px; /* Sesuaikan tinggi maksimum gambar */
+            max-height: 300px; 
             width: auto;
         }
         .jumbotron h1 {
@@ -40,12 +62,24 @@
         }
         .welcome-message {
             text-align: center;
-            margin-top: 20px; /* Sesuaikan jarak dari jumbotron */
+            margin-bottom: 5px; 
+        }
+        .user-info {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .logout-btn {
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="user-info">
+            <span>Spada,<?php echo htmlspecialchars($username); ?>!</span>
+            <a href="logout.php" class="btn btn-danger logout-btn">Logout</a>
+        </div>
+
         <div class="jumbotron text-center mt-5">
             <img src="images/raji.png" alt="Logo Toko RAJ">
         </div>
