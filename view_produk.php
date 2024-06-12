@@ -39,7 +39,7 @@ $produk = $stmt->fetchAll();
                     <td><?php echo htmlspecialchars($item['id']); ?></td>
                     <td><?php echo htmlspecialchars($item['nama_produk']); ?></td>
                     <td><?php echo htmlspecialchars($item['kategori']); ?></td>
-                    <td><?php echo htmlspecialchars($item['harga']); ?></td>
+                    <td><?php echo 'Rp ' . number_format($item['harga'], 0, ',', '.'); ?></td>
                     <td><?php echo htmlspecialchars($item['stok']); ?></td>
                     <td>
                         <a href="edit_produk.php?id=<?php echo $item['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
