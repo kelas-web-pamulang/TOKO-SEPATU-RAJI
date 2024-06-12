@@ -9,17 +9,33 @@ $transaksi = $stmt->fetch();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_pelanggan = intval($_POST['id_pelanggan']);
     $id_produk = intval($_POST['id_produk']);
-    $jumlah = intval($_POST['jumlah']);
-    
-    $stmt_produk = $pdo->prepare("SELECT harga FROM produk WHERE id = ?");
+    $jumlah_baru = intval($_POST['jumlah']);
+    $jumlah_lama = $transaksi['jumlah'];
+
+    // Ambil harga dan stok produk dari database
+    $stmt_produk = $pdo->prepare("SELECT harga, stok FROM produk WHERE id = ?");
     $stmt_produk->execute([$id_produk]);
     $produk = $stmt_produk->fetch();
-    $total_harga = $produk['harga'] * $jumlah;
 
-    $stmt = $pdo->prepare("UPDATE transaksi SET id_pelanggan = ?, id_produk = ?, jumlah = ?, total_harga = ?, tanggal_transaksi = NOW() WHERE id = ?");
-    $stmt->execute([$id_pelanggan, $id_produk, $jumlah, $total_harga, $id]);
+    if ($produk) {
+        $total_harga = $produk['harga'] * $jumlah_baru;
+        
+        // Hitung perubahan stok
+        $perubahan_stok = $jumlah_lama - $jumlah_baru;
+        $stok_baru = $produk['stok'] + $perubahan_stok;
 
-    echo "Transaksi berhasil diperbarui!";
+        // Update stok produk
+        $stmt_update_stok = $pdo->prepare("UPDATE produk SET stok = ? WHERE id = ?");
+        $stmt_update_stok->execute([$stok_baru, $id_produk]);
+
+        // Update transaksi
+        $stmt = $pdo->prepare("UPDATE transaksi SET id_pelanggan = ?, id_produk = ?, jumlah = ?, total_harga = ?, tanggal_transaksi = NOW() WHERE id = ?");
+        $stmt->execute([$id_pelanggan, $id_produk, $jumlah_baru, $total_harga, $id]);
+
+        echo "Transaksi berhasil diperbarui!";
+    } else {
+        echo "Produk tidak ditemukan.";
+    }
 }
 ?>
 
@@ -67,3 +83,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
+
