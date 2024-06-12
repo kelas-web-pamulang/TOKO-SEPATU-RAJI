@@ -44,7 +44,7 @@ $transaksi = $stmt->fetchAll();
                     <td><?php echo htmlspecialchars($item['nama_pelanggan']); ?></td>
                     <td><?php echo htmlspecialchars($item['nama_produk']); ?></td>
                     <td><?php echo htmlspecialchars($item['jumlah']); ?></td>
-                    <td><?php echo htmlspecialchars($item['total_harga']); ?></td>
+                    <td><?php echo 'Rp ' . number_format($item['total_harga'], 0, ',', '.'); ?></td>
                     <td><?php echo htmlspecialchars($item['tanggal_transaksi']); ?></td>
                     <td>
                         <a href="edit_transaksi.php?id=<?php echo $item['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
