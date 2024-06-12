@@ -3,6 +3,9 @@
 - Muhammad Rafi Akmaludin
 
 # Fitur
+- Form Login
+- Form Register
+- Form Logout
 - Tambah Produk
 - Tambah Pelanggan
 - Tambah Transaksi
