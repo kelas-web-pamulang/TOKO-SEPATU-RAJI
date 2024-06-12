@@ -4,8 +4,8 @@ require 'config.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama_produk = $_POST['nama_produk'];
     $kategori = $_POST['kategori'];
-    $harga = $_POST['harga'];
-    $stok = $_POST['stok'];
+    $harga = intval($_POST['harga']); 
+    $stok = intval($_POST['stok']); 
 
     $stmt = $pdo->prepare("INSERT INTO produk (nama_produk, kategori, harga, stok) VALUES (?, ?, ?, ?)");
     $stmt->execute([$nama_produk, $kategori, $harga, $stok]);
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="form-group">
                         <label>Harga</label>
-                        <input type="text" name="harga" class="form-control" required>
+                        <input type="number" name="harga" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label>Stok</label>
