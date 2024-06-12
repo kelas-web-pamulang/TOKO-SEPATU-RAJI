@@ -2,19 +2,33 @@
 require 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_pelanggan = $_POST['id_pelanggan'];
-    $id_produk = $_POST['id_produk'];
-    $jumlah = $_POST['jumlah'];
+    $id_pelanggan = intval($_POST['id_pelanggan']);
+    $id_produk = intval($_POST['id_produk']);
+    $jumlah = intval($_POST['jumlah']);
 
-    $stmt_produk = $pdo->prepare("SELECT harga FROM produk WHERE id = ?");
+    // Ambil harga dan stok produk dari database
+    $stmt_produk = $pdo->prepare("SELECT harga, stok FROM produk WHERE id = ?");
     $stmt_produk->execute([$id_produk]);
     $produk = $stmt_produk->fetch();
-    $total_harga = $produk['harga'] * $jumlah;
 
-    $stmt = $pdo->prepare("INSERT INTO transaksi (id_pelanggan, id_produk, jumlah, total_harga, tanggal_transaksi) VALUES (?, ?, ?, ?, NOW())");
-    $stmt->execute([$id_pelanggan, $id_produk, $jumlah, $total_harga]);
+    // Cek apakah stok cukup
+    if ($produk['stok'] >= $jumlah) {
+        // Hitung total harga
+        $total_harga = $produk['harga'] * $jumlah;
 
-    echo "Transaksi berhasil ditambahkan!";
+        // Kurangi stok produk
+        $stok_baru = $produk['stok'] - $jumlah;
+        $stmt_update_stok = $pdo->prepare("UPDATE produk SET stok = ? WHERE id = ?");
+        $stmt_update_stok->execute([$stok_baru, $id_produk]);
+
+        // Masukkan transaksi baru
+        $stmt = $pdo->prepare("INSERT INTO transaksi (id_pelanggan, id_produk, jumlah, total_harga, tanggal_transaksi) VALUES (?, ?, ?, ?, NOW())");
+        $stmt->execute([$id_pelanggan, $id_produk, $jumlah, $total_harga]);
+
+        echo "Transaksi berhasil ditambahkan!";
+    } else {
+        echo "Stok tidak cukup untuk melakukan transaksi ini.";
+    }
 }
 ?>
 
