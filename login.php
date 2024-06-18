@@ -1,30 +1,51 @@
 <?php
 session_start();
 require 'config.php';
+require 'vendor/autoload.php'; // Path to your Composer autoload.php
+
+use Sentry\SentrySdk;
+
+\Sentry\init([
+  'dsn' => 'https://2dfc0fa4bce6fe2c740b458a3b8d7e97@o4507451047477248.ingest.us.sentry.io/4507451380858880',
+  // Specify a fixed sample rate
+  'traces_sample_rate' => 1.0,
+  // Set a sampling rate for profiling - this is relative to traces_sample_rate
+  'profiles_sample_rate' => 1.0,
+]);
+
+// Function to log errors
+function logError($message) {
+    error_log($message . "\n", 3, "error.log");
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    try {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
 
-    $sql = "SELECT id, password FROM users WHERE username = :username";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['username' => $username]);
-    $user = $stmt->fetch();
+        $sql = "SELECT id, password FROM users WHERE username = :username";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['username' => $username]);
+        $user = $stmt->fetch();
 
-    if ($user) {
-        if (password_verify($password, $user['password'])) {
-            // Set session variables
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $username;
+        if ($user) {
+            if (password_verify($password, $user['password'])) {
+                // Set session variables
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $username;
 
-            // Redirect to index.php after successful login
-            header("Location: index.php");
-            exit();
+                header("Location: index.php");
+                exit();
+            } else {
+                echo "<p style='color: red;'>Password salah.</p>";
+            }
         } else {
-            echo "<p style='color: red;'>Password salah.</p>";
+            echo "<p style='color: red;'>Username tidak ditemukan.</p>";
         }
-    } else {
-        echo "<p style='color: red;'>Username tidak ditemukan.</p>";
+    } catch (Exception $e) {
+        SentrySdk::captureException($e);
+        logError("Error during login: " . $e->getMessage());
+        echo "<p style='color: red;'>Terjadi kesalahan saat login. Silakan coba lagi nanti.</p>";
     }
 }
 ?>
@@ -32,15 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Login Heula Atuh</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url('images/bgsepatu.jpg'); /* Ganti path sesuai dengan lokasi gambar */
+            background-image: url('images/bgsepatu1.jpg'); 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #f4f4f4; /* Warna latar belakang backup */
+            background-color: #f4f4f4; 
             padding-top: 50px;
         }
         .container {
@@ -67,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             box-sizing: border-box;
         }
         input[type="submit"] {
-            background-color: #4CAF50;
+            background-color: #007bff;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -85,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 </head>
 <body>
     <div class="container">
-        <h2>Login</h2>
+        <h2>LOGIN</h2>
         <form action="" method="post">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>

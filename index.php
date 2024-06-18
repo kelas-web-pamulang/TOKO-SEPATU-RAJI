@@ -1,5 +1,20 @@
 <?php
+
+require_once 'vendor/autoload.php';
+
+\Sentry\init([
+  'dsn' => 'https://2dfc0fa4bce6fe2c740b458a3b8d7e97@o4507451047477248.ingest.us.sentry.io/4507451380858880',
+  // Specify a fixed sample rate
+  'traces_sample_rate' => 1.0,
+  // Set a sampling rate for profiling - this is relative to traces_sample_rate
+  'profiles_sample_rate' => 1.0,
+]);
+
 session_start();
+
+ini_set('log_errors', 1);
+ini_set('error_log', 'error.log');
+error_reporting(E_ALL);
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -10,6 +25,15 @@ require 'config.php';
 
 $user_id = $_SESSION['user_id'];
 $username = $_SESSION['username'];
+
+try {
+    // Contoh kode yang mungkin menimbulkan error
+    // Misalnya, akses array yang tidak ada
+    //$array = [];
+    //echo $array['key'];
+} catch (Exception $e) {
+    Sentry\captureException($e);
+}
 
 ?>
 
@@ -76,7 +100,7 @@ $username = $_SESSION['username'];
 <body>
     <div class="container">
         <div class="user-info">
-            <span>Spada,<?php echo htmlspecialchars($username); ?>!</span>
+            <span>Spadaaaaaaaaa, <?php echo htmlspecialchars($username); ?>!</span>
             <a href="logout.php" class="btn btn-danger logout-btn">Logout</a>
         </div>
 
@@ -89,26 +113,16 @@ $username = $_SESSION['username'];
         <div class="card-deck">
             <div class="card text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Produk</h5>
-                    <p class="card-text">Kelola data produk.</p>
-                    <a href="add_produk.php" class="btn btn-primary">Tambah Produk</a>
-                    <a href="view_produk.php" class="btn btn-secondary">Lihat Produk</a>
+                    <h5 class="card-title">Management Produk dan Pelanggan</h5>
+                    <p class="card-text">Kelola data produk dan pelanggan.</p>
+                    <a href="produk.php?add" class="btn btn-primary">Masuk kedalam System</a>
                 </div>
             </div>
             <div class="card text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Pelanggan</h5>
-                    <p class="card-text">Kelola data pelanggan.</p>
-                    <a href="add_pelanggan.php" class="btn btn-primary">Tambah Pelanggan</a>
-                    <a href="view_pelanggan.php" class="btn btn-secondary">Lihat Pelanggan</a>
-                </div>
-            </div>
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Transaksi</h5>
+                    <h5 class="card-title">Management Transaksi</h5>
                     <p class="card-text">Kelola data transaksi.</p>
-                    <a href="add_transaksi.php" class="btn btn-primary">Tambah Transaksi</a>
-                    <a href="view_transaksi.php" class="btn btn-secondary">Lihat Transaksi</a>
+                    <a href="transaksi.php?add" class="btn btn-primary">System Transaksi</a>
                 </div>
             </div>
         </div>
